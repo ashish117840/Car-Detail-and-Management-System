@@ -9,12 +9,12 @@ export default defineConfig({
     host: true, // Listen on all network interfaces
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://car-detail-and-management-system.onrender.com',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:5000',
+        target: 'https://car-detail-and-management-system.onrender.com',
         changeOrigin: true,
         secure: false,
       },
