@@ -260,6 +260,7 @@ const CarDetail = () => {
                                         <option value="maintenance">Maintenance</option>
                                         <option value="repair">Repair</option>
                                         <option value="inspection">Inspection</option>
+                                        <option value="detailing">Detailing</option>
                                         <option value="other">Other</option>
                                     </select>
                                 </div>

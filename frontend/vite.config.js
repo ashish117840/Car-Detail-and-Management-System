@@ -6,6 +6,7 @@ export default defineConfig({
   base: './', // ✅ Add this line
   server: {
     port: 3000,
+    host: true, // Listen on all network interfaces
     proxy: {
       '/api': {
         target: 'http://localhost:5000',

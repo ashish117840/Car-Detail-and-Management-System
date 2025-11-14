@@ -62,6 +62,7 @@ if (process.env.VERCEL !== '1') {
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/cars', require('./routes/carRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes'));
+app.use('/api/payments', require('./routes/paymentRoutes'));
 
 app.get('/', (req, res) => {
    res.send("Car Management System API is running");

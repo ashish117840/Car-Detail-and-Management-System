@@ -4,31 +4,46 @@ const fs = require('fs');
 const { uploadToCloud } = require('../services/cloudStorage');
 
 // Helper function to handle file uploads
-const handleFileUpload = async (req) => {
+const slugify = (str) => (str || 'car')
+  .toString()
+  .toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)+/g, '');
+
+const handleFileUpload = async (req, meta = {}) => {
   if (!req.file) return null;
-  
-  const isVercel = process.env.VERCEL === '1';
-  
-  if (isVercel) {
-    // For Vercel, try cloud storage first, then fallback to base64
-    try {
-      const cloudUrl = await uploadToCloud(
-        req.file.buffer,
-        req.file.mimetype,
-        req.file.originalname
-      );
+
+  // Try cloud upload whenever available (Cloudinary or base64 fallback)
+  try {
+    const folder = 'car-management/user-uploads';
+    const publicId = meta.brand || meta.model
+      ? `${slugify(meta.brand)}-${slugify(meta.model)}`
+      : undefined;
+
+    const cloudUrl = await uploadToCloud(
+      req.file.buffer,
+      req.file.mimetype,
+      req.file.originalname,
+      { folder, publicId }
+    );
+
+    if (cloudUrl) {
       return cloudUrl;
-    } catch (error) {
-      console.error('Cloud upload failed, using base64:', error);
-      // Fallback to base64
-      const base64 = req.file.buffer.toString('base64');
-      const mimeType = req.file.mimetype;
-      return `data:${mimeType};base64,${base64}`;
     }
-  } else {
-    // For local development, use the file path
+  } catch (error) {
+    console.error('Cloud upload failed, falling back to local or base64:', error);
+  }
+
+  // If cloud upload not configured, use local filesystem path (disk storage)
+  if (req.file && req.file.filename) {
     return `/uploads/cars/${req.file.filename}`;
   }
+
+  // As a last resort, embed as base64
+  const base64 = req.file.buffer.toString('base64');
+  const mimeType = req.file.mimetype;
+  return `data:${mimeType};base64,${base64}`;
 };
 
 // @desc    Get all cars
@@ -95,7 +110,7 @@ const createCar = async (req, res) => {
     };
 
     // Add image path if file was uploaded
-    const imagePath = await handleFileUpload(req);
+    const imagePath = await handleFileUpload(req, { brand: req.body.brand, model: req.body.model });
     if (imagePath) {
       carData.image = imagePath;
     }
@@ -144,7 +159,10 @@ const updateCar = async (req, res) => {
     const updateData = { ...req.body };
 
     // Add image path if file was uploaded
-    const imagePath = await handleFileUpload(req);
+    const imagePath = await handleFileUpload(req, {
+      brand: req.body.brand || car.brand,
+      model: req.body.model || car.model
+    });
     if (imagePath) {
       updateData.image = imagePath;
     }

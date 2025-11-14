@@ -29,7 +29,7 @@ const ServiceCostEstimator = ({ car, onClose }) => {
     };
 
     const calculateEstimates = (serviceData) => {
-        const serviceTypes = ['maintenance', 'repair', 'inspection', 'other'];
+        const serviceTypes = ['maintenance', 'repair', 'inspection', 'detailing', 'other'];
         const estimates = {};
 
         serviceTypes.forEach(type => {
@@ -58,6 +58,7 @@ const ServiceCostEstimator = ({ car, onClose }) => {
             case 'maintenance': return '🔧';
             case 'repair': return '🛠️';
             case 'inspection': return '🔍';
+            case 'detailing': return '✨';
             case 'other': return '📋';
             default: return '⚙️';
         }
@@ -68,6 +69,7 @@ const ServiceCostEstimator = ({ car, onClose }) => {
             case 'maintenance': return 'bg-blue-100 text-blue-800';
             case 'repair': return 'bg-red-100 text-red-800';
             case 'inspection': return 'bg-green-100 text-green-800';
+            case 'detailing': return 'bg-purple-100 text-purple-800';
             case 'other': return 'bg-gray-100 text-gray-800';
             default: return 'bg-gray-100 text-gray-800';
         }

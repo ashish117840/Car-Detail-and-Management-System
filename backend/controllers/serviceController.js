@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const Service = require('../models/Service');
 const Car = require('../models/Car');
 
@@ -23,7 +24,54 @@ const createService = async (req, res) => {
       });
     }
 
-    const service = await Service.create(req.body);
+    const serviceData = {
+      ...req.body,
+      cost: Number(req.body.cost)
+    };
+
+    if (req.body.paymentDetails) {
+      const {
+        orderId,
+        paymentId,
+        signature,
+        amount,
+        currency,
+        status
+      } = req.body.paymentDetails;
+
+      if (orderId && paymentId && signature) {
+        if (!process.env.RAZORPAY_KEY_SECRET) {
+          return res.status(500).json({
+            success: false,
+            message: 'Payment verification configuration missing on server'
+          });
+        }
+
+        const generatedSignature = crypto
+          .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        if (generatedSignature !== signature) {
+          return res.status(400).json({
+            success: false,
+            message: 'Payment verification failed'
+          });
+        }
+
+        serviceData.paymentDetails = {
+          status: status || 'paid',
+          orderId,
+          paymentId,
+          signature,
+          amount: amount ? Number(amount) : Number(req.body.cost),
+          currency: currency || 'INR',
+          paidAt: new Date()
+        };
+      }
+    }
+
+    const service = await Service.create(serviceData);
 
     // Add service to car's services array
     await Car.findByIdAndUpdate(
@@ -104,9 +152,56 @@ const updateService = async (req, res) => {
       });
     }
 
+    const updateData = {
+      ...req.body,
+      ...(req.body.cost !== undefined ? { cost: Number(req.body.cost) } : {})
+    };
+
+    if (req.body.paymentDetails) {
+      const {
+        orderId,
+        paymentId,
+        signature,
+        amount,
+        currency,
+        status
+      } = req.body.paymentDetails;
+
+      if (orderId && paymentId && signature) {
+        if (!process.env.RAZORPAY_KEY_SECRET) {
+          return res.status(500).json({
+            success: false,
+            message: 'Payment verification configuration missing on server'
+          });
+        }
+
+        const generatedSignature = crypto
+          .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+          .update(`${orderId}|${paymentId}`)
+          .digest('hex');
+
+        if (generatedSignature !== signature) {
+          return res.status(400).json({
+            success: false,
+            message: 'Payment verification failed'
+          });
+        }
+
+        updateData.paymentDetails = {
+          status: status || 'paid',
+          orderId,
+          paymentId,
+          signature,
+          amount: amount ? Number(amount) : Number(req.body.cost ?? service.cost),
+          currency: currency || service.paymentDetails?.currency || 'INR',
+          paidAt: new Date()
+        };
+      }
+    }
+
     const updatedService = await Service.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     ).populate('car', 'brand model year');
 

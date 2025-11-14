@@ -1,14 +1,15 @@
 const multer = require('multer');
 const path = require('path');
 
-// Check if running on Vercel
+// Check if running on Vercel / Cloudinary enabled
 const isVercel = process.env.VERCEL === '1';
+const hasCloudinary = !!process.env.CLOUDINARY_CLOUD_NAME;
 
 // Set up storage engine based on environment
 let storage;
 
-if (isVercel) {
-  // Use memory storage for Vercel (serverless)
+if (isVercel || hasCloudinary) {
+  // Use memory storage when on serverless or when we'll upload to Cloudinary
   storage = multer.memoryStorage();
 } else {
   // Use disk storage for local development

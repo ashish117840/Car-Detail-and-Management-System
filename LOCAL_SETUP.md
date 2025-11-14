@@ -20,6 +20,8 @@
    NODE_ENV=development
    CLIENT_URL=http://localhost:3000
    PORT=5000
+   RAZORPAY_KEY_ID=your_razorpay_key_id
+   RAZORPAY_KEY_SECRET=your_razorpay_key_secret
    ```
 
 4. **Start MongoDB:**
@@ -50,6 +52,7 @@
    # Create .env file with the following content:
    VITE_API_URL=http://localhost:5000
    VITE_CLIENT_URL=http://localhost:3000
+   VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
    ```
 
 4. **Start the frontend development server:**

@@ -24,7 +24,7 @@ const serviceSchema = new mongoose.Schema({
   },
   serviceType: {
     type: String,
-    enum: ['maintenance', 'repair', 'inspection', 'other'],
+    enum: ['maintenance', 'repair', 'inspection', 'detailing', 'other'],
     default: 'maintenance'
   },
   nextServiceDate: {
@@ -34,6 +34,22 @@ const serviceSchema = new mongoose.Schema({
     type: String,
     trim: true,
     maxlength: [100, 'Service provider name cannot be more than 100 characters']
+  },
+  paymentDetails: {
+    status: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending'
+    },
+    orderId: String,
+    paymentId: String,
+    signature: String,
+    amount: Number,
+    currency: {
+      type: String,
+      default: 'INR'
+    },
+    paidAt: Date
   }
 }, {
   timestamps: true

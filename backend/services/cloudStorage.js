@@ -22,21 +22,28 @@ if (cloudinary && process.env.CLOUDINARY_CLOUD_NAME) {
  * @param {Buffer} fileBuffer - The file buffer
  * @param {string} mimeType - The MIME type of the file
  * @param {string} originalName - The original filename
+ * @param {Object} [options] - Optional upload options
+ * @param {string} [options.folder] - Cloudinary folder path
+ * @param {string} [options.publicId] - Desired public ID (without folder)
  * @returns {Promise<string>} - The uploaded image URL
  */
-const uploadToCloud = async (fileBuffer, mimeType, originalName) => {
+const uploadToCloud = async (fileBuffer, mimeType, originalName, options = {}) => {
   const isVercel = process.env.VERCEL === '1';
-  const hasCloudinary = process.env.CLOUDINARY_CLOUD_NAME;
-  
-  if (isVercel && hasCloudinary && cloudinary) {
-    // Use Cloudinary for production
+  const hasCloudinary = !!process.env.CLOUDINARY_CLOUD_NAME;
+
+  if (hasCloudinary && cloudinary) {
+    // Use Cloudinary whenever credentials are provided
     try {
+      const folder = options.folder || 'car-management/user-uploads';
+      const defaultId = `car-${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const publicId = options.publicId || defaultId;
+
       const result = await new Promise((resolve, reject) => {
         cloudinary.uploader.upload_stream(
           {
             resource_type: 'auto',
-            folder: 'car-management',
-            public_id: `car-${Date.now()}-${Math.round(Math.random() * 1E9)}`
+            folder,
+            public_id: publicId
           },
           (error, result) => {
             if (error) reject(error);

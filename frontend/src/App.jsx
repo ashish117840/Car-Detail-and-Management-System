@@ -18,6 +18,7 @@ import AddCar from './pages/AddCar';
 import EditCar from './pages/EditCar';
 import CarDetail from './pages/CarDetail';
 import FeaturesDashboard from './pages/FeaturesDashboard';
+import ServiceBooking from './pages/ServiceBooking';
 
 function App() {
     return (
@@ -62,6 +63,14 @@ function App() {
                                 element={
                                     <ProtectedRoute>
                                         <FeaturesDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/services"
+                                element={
+                                    <ProtectedRoute>
+                                        <ServiceBooking />
                                     </ProtectedRoute>
                                 }
                             />
