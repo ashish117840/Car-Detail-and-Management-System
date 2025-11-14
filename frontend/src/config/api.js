@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get the API base URL from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://car-detail-and-management-system.onrender.com';
 
 // Create axios instance with base configuration
 const api = axios.create({
