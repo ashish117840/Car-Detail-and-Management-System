@@ -3,6 +3,16 @@ import { Link } from 'react-router-dom';
 import CarQRCode from './CarQRCode';
 import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
+const formatInr = (value) => {
+    if (typeof value !== 'number') return 'N/A';
+
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+    }).format(value);
+};
+
 const CarCard = ({ car }) => {
     const [showQRCode, setShowQRCode] = useState(false);
 
@@ -42,7 +52,7 @@ const CarCard = ({ car }) => {
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Price:</span>
-                    <span className="font-bold text-green-600">${car.price?.toLocaleString()}</span>
+                    <span className="font-bold text-green-600">{formatInr(car.price)}</span>
                 </div>
                 {car.color && (
                     <div className="flex justify-between">

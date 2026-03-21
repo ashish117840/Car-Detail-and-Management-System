@@ -52,6 +52,18 @@ const sampleUsers = [
   }
 ];
 
+const USD_TO_INR_RATE = 83;
+
+const mapUsdToInrWithOriginalPrice = (car) => {
+  const originalPrice = car.price;
+
+  return {
+    ...car,
+    originalPrice,
+    price: Math.round(originalPrice * USD_TO_INR_RATE)
+  };
+};
+
 const sampleCars = [
   {
     brand: 'Toyota',
@@ -133,7 +145,7 @@ const sampleCars = [
     description: 'German engineering meets luxury and performance.',
     image: null
   }
-];
+].map(mapUsdToInrWithOriginalPrice);
 
 const sampleServices = [
   {

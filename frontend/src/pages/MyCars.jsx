@@ -5,6 +5,12 @@ import { toast } from 'react-toastify';
 import CarCard from '../components/CarCard';
 import { useAuth } from '../context/authContext';
 
+const formatInr = (value) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+}).format(value || 0);
+
 const MyCars = () => {
     const [cars, setCars] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -126,7 +132,7 @@ const MyCars = () => {
                             </div>
                             <div className="text-center p-4 bg-purple-50 rounded-lg">
                                 <div className="text-2xl font-bold text-purple-600">
-                                    ${cars.reduce((sum, car) => sum + (car.price || 0), 0).toLocaleString()}
+                                    {formatInr(cars.reduce((sum, car) => sum + (car.price || 0), 0))}
                                 </div>
                                 <div className="text-sm text-gray-600">Total Value</div>
                             </div>

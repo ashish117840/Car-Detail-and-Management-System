@@ -8,6 +8,26 @@ import FuelTracker from '../components/FuelTracker';
 import ServiceCostEstimator from '../components/ServiceCostEstimator';
 import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
+const formatInr = (value) => {
+    if (typeof value !== 'number') return 'N/A';
+
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+    }).format(value);
+};
+
+const formatUsd = (value) => {
+    if (typeof value !== 'number') return 'N/A';
+
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+    }).format(value);
+};
+
 const CarDetail = () => {
     const [car, setCar] = useState(null);
     const [services, setServices] = useState([]);
@@ -159,8 +179,13 @@ const CarDetail = () => {
                                     <div>
                                         <label className="text-sm font-medium text-gray-600">Price</label>
                                         <p className="text-lg font-semibold text-green-600">
-                                            ${car.price?.toLocaleString()}
+                                            {formatInr(car.price)}
                                         </p>
+                                        {typeof car.originalPrice === 'number' && (
+                                            <p className="text-sm text-gray-500">
+                                                Original price: {formatUsd(car.originalPrice)}
+                                            </p>
+                                        )}
                                     </div>
                                     {car.color && (
                                         <div>

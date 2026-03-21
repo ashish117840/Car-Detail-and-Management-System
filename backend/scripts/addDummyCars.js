@@ -9,6 +9,18 @@ const connectDB = require('../config/db');
 const User = require('../models/User');
 const Car = require('../models/Car');
 
+const USD_TO_INR_RATE = 83;
+
+const mapUsdToInrWithOriginalPrice = (car) => {
+  const originalPrice = car.price;
+
+  return {
+    ...car,
+    originalPrice,
+    price: Math.round(originalPrice * USD_TO_INR_RATE)
+  };
+};
+
 async function ensureOwnerUser() {
   // Prefer any existing user; otherwise create a simple seed user
   let user = await User.findOne({});
@@ -76,7 +88,8 @@ async function run() {
         mileage: 50000,
         description: 'Well-maintained, service history available.'
       }
-    ].map(c => ({ ...c, owner: owner._id }));
+    ].map(mapUsdToInrWithOriginalPrice)
+      .map(c => ({ ...c, owner: owner._id }));
 
     const created = await Car.insertMany(carsToInsert);
     console.log(`Inserted ${created.length} cars.`);

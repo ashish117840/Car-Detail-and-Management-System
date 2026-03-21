@@ -24,6 +24,10 @@ const carSchema = new mongoose.Schema({
     required: [true, 'Please provide the car price'],
     min: [0, 'Price cannot be negative']
   },
+  originalPrice: {
+    type: Number,
+    min: [0, 'Original price cannot be negative']
+  },
   color: {
     type: String,
     trim: true,
