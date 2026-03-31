@@ -67,8 +67,9 @@ const loginUser = async (req, res) => {
     const email = (req.body.email || '').trim().toLowerCase();
     const password = req.body.password || '';
 
-    // Check for user email
-    const user = await User.findOne({ email });
+    // Match email case-insensitively for compatibility with legacy records.
+    const escapedEmail = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const user = await User.findOne({ email: { $regex: `^${escapedEmail}$`, $options: 'i' } });
 
     if (user && (await user.comparePassword(password))) {
       res.json({

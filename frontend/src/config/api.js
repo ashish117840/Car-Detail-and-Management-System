@@ -36,10 +36,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
-      sessionStorage.removeItem('auth_token');
-      window.location.href = '/login';
+    const status = error.response?.status;
+    const requestUrl = error.config?.url || '';
+    const isAuthRequest = requestUrl.includes('/api/users/login') || requestUrl.includes('/api/users/register');
+
+    // Only force logout/redirect for protected requests, not failed login/register attempts.
+    if (status === 401 && !isAuthRequest) {
+      const tokenData = sessionStorage.getItem('auth_token');
+      if (tokenData) {
+        sessionStorage.removeItem('auth_token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
