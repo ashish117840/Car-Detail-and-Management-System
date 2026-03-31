@@ -13,7 +13,8 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -63,7 +64,8 @@ const registerUser = async (req, res) => {
 // @access  Public
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
 
     // Check for user email
     const user = await User.findOne({ email });
